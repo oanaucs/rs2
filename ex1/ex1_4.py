@@ -14,26 +14,48 @@ def A_rows_for_single_pair(x, x_):
 
 def calculate_H(image_points, world_points):
     # 1. Koordinaten in homogene Koordinaten transformieren
-    ...
+    image_points = [to_homogenous(i) for i in image_points]
+    world_points = [to_homogenous(i) for i in world_points]
 
     # 2. A-Matrix ausrechnen
-    ...
+    A = np.zeros((2*len(image_points), 9))
+    for i in range(len(image_points)):
+        sub_A = A_rows_for_single_pair(world_points[i], image_points[i])
+        A[2 * i] = sub_A[0]
+        A[2 * i + 1] = sub_A[1] 
 
     # 3. Homogenes Gleichungssystem Ah=0 lösen
-    ...
+    u, d, v = np.linalg.svd(A)
 
     # 4. Projektive Abbildung berechnen und zurückgeben
-    H = ...
+    H = np.reshape(v, (3, 3))
     return H
 
 
 def main():
     # 1. Bild laden und anzeigen
-    ...
+    fig = plt.figure()
+    img = mpimg.imread('stinkbug.png')
 
     # 2. Punkte x1, ..., x4 anklicken lassen
-    image_points = ...
-    world_points = ...
+    clicks = []
+
+    def onclick(event):
+        if len(clicks) < 4:
+            ix, iy = event.xdata, event.ydata
+            clicks.append(vec2d(ix, iy))
+            plt.plot(ix, iy, ',')
+            fig.canvas.draw()
+
+
+    cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    
+    
+    plt.imshow(img)
+    plt.show()
+
+    image_points = [vec2d(i[0], i[1]) for i in clicks]
+    world_points = [vec2d(0, 0), vec2d(0, 1), vec2d(1, 0), vec2d(1, 1)]
 
     # 3. Projektive Abbildung berechnen
     H = calculate_H(image_points, world_points)
@@ -42,7 +64,7 @@ def main():
     print(H)
 
     # 4. Sanity Check durch Anwenden der Projektion
-
+    image_points = H * world_points
 
 
 if __name__ == '__main__':
