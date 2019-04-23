@@ -28,7 +28,11 @@ def rotate_img_around_point(img, p, q):
     # 2. Transformation für jeden Punkt des neuen Bildes ausführen
     for newy, newx in np.ndindex(newimg.shape[:2]):
         oldy, oldx = f_inv(p, q, (newy, newx))
-        newimg[newy, newx] = img[math.trunc(oldy), math.trunc(oldx)]
+        oldx = math.trunc(oldx)
+        oldy = math.trunc(oldy)
+        if (oldy < newimg.shape[0] and oldx < newimg.shape[1]):
+            if (newy < newimg.shape[0] and newx < newimg.shape[1]):
+                newimg[newy, newx] = img[oldy, oldx]
 
     # 3. Neues Bild zurückgeben
     return newimg
