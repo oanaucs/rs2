@@ -17,8 +17,9 @@ def f_inv(p, q, s):
 
     alpha = math.atan2(q[1] - p[1], q[0] - p[0])
     R_inv = np.matrix([[math.cos(alpha), math.sin(alpha)], [-math.sin(alpha), math.cos(alpha)]])
-    f_s_inv = R_inv * np.expand_dims(np.transpose(np.asarray(s - p)), axis=1) + np.expand_dims(np.transpose(np.asarray(p)), axis=1)
-    return np.asscalar(f_s_inv[0]), np.asscalar(f_s_inv[1])
+    f_s_inv = np.matmul(R_inv, s - p) + p
+    f_s_inv = f_s_inv.reshape((2, 1))
+    return (np.asscalar(f_s_inv[0]), np.asscalar(f_s_inv[1]))
 
 
 def rotate_img_around_point(img, p, q):
@@ -27,12 +28,11 @@ def rotate_img_around_point(img, p, q):
 
     # 2. Transformation für jeden Punkt des neuen Bildes ausführen
     for newy, newx in np.ndindex(newimg.shape[:2]):
-        oldy, oldx = f_inv(p, q, (newy, newx))
-        oldx = math.trunc(oldx)
-        oldy = math.trunc(oldy)
+        oldx, oldy = f_inv(p, q, (newx, newy))
+        oldx = int(oldx)
+        oldy = int(oldy)
         if (oldy < newimg.shape[0] and oldx < newimg.shape[1]):
-            if (newy < newimg.shape[0] and newx < newimg.shape[1]):
-                newimg[newy, newx] = img[oldy, oldx]
+            newimg[newy, newx] = img[oldy, oldx]
 
     # 3. Neues Bild zurückgeben
     return newimg
@@ -41,33 +41,19 @@ def rotate_img_around_point(img, p, q):
 def main():
     # 1. Bild laden und anzeigen
     fig = plt.figure()
-    img = mpimg.imread('stinkbug.png')
+    img = mpimg.imread('01_rotation/input/stinkbug.png')
 
     # 2. Punkte p und q anklicken lassen
-    clicks = []
-
-    def onclick(event):
-        if len(clicks) < 2:
-            ix, iy = event.xdata, event.ydata
-            clicks.append(vec2d(ix, iy))
-            plt.plot(ix, iy, ',')
-            fig.canvas.draw()
-
-
-    cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    
-    
     plt.imshow(img)
-    plt.show()
-    # TODO
-    # if len(clicks) == 2:
-    #     fig.canvas.mpl_disconnect(cid)
 
-    p, q = clicks[0], clicks[1]
+    clicks = plt.ginput(2)
+
+    plt.show()
+
+    p, q = np.asarray(clicks[0]), np.asarray(clicks[1])
 
     # 3. Transformation ausführen
     newimg = rotate_img_around_point(img, p, q)
-    print(newimg)
 
     # 5. Neues Bild anzeigen
     plt.imshow(newimg)
