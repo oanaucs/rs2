@@ -61,8 +61,15 @@ def main():
     print(H)
 
     # 4. Sanity Check durch Anwenden der Projektion
-    world_points = [to_homogenous(i) for i in world_points]
-    image_points = [H *i for i in world_points]
+    # world_points = [to_homogenous(i) for i in world_points]
+    projected_image_points = [np.matmul(H, to_homogenous(i)) for i in image_points]
+
+    print('world points')
+    print(world_points)
+    print('')
+    print('calculated points')
+    print(projected_image_points)
+
 
 
 if __name__ == '__main__':

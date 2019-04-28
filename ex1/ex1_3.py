@@ -17,47 +17,38 @@ from ex1_2 import rotate_img_around_point
 def main():
     # 1. Bild laden und anzeigen
     fig = plt.figure()
-    img = mpimg.imread('stinkbug.png')
+    img = mpimg.imread('01_rotation/input/stinkbug.png')
 
     img_shape = img.shape
 
     # 2. Mittelpunkt p berechnen und auf Bild anzeigen
-    p = np.asarray([img_shape[0] / 2, img_shape[1] / 2])
+    p = np.asarray([int(img_shape[0] / 2), int(img_shape[1] / 2)])
     plt.plot([p[0]], [p[1]], marker='x')
 
     # 3. Punkt q anklicken lassen
-    q = []
-
-    def onclick(event):
-        if len(q) < 1:
-            ix, iy = event.xdata, event.ydata
-            q.append(vec2d(ix, iy))
-            plt.plot(ix, iy, ',')
-            fig.canvas.draw()
-
-
-    cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    
-    
     plt.imshow(img)
+
+    q = plt.ginput(1)
+
     plt.show()
+
     q = q[0]
 
     alpha = math.atan2(q[1] - p[1], q[0] - p[0])
 
     # 4. Transformation mit Funktion aus Ausgabe 2 ausführen
-    newimg = rotate_img_around_point(img, p, q)
+    newimg = np.asarray(rotate_img_around_point(img, p, q), dtype=np.float32)
     plt.imshow(newimg)
     plt.show()
 
     # 5. Transformation mit skimage-Funktion ausführen
-    sk_newimg = skimage.transform.rotate(img, np.degrees(alpha))
+    sk_newimg = skimage.transform.rotate(img, -np.degrees(alpha))
 
     plt.imshow(sk_newimg)
     plt.show()    
 
     # 6. Differenzbild anzeigen
-    diff_img = sk_newimg - newimg
+    diff_img = sk_newimg.astype(np.float32) - newimg
 
     plt.imshow(diff_img)
     plt.show()
@@ -67,6 +58,8 @@ def main():
     for y, x in np.ndindex(newimg.shape[:2]):
         mse += np.square(sk_newimg[y, x] - newimg[y, x])
     mse = 1 / (newimg.shape[0] * newimg.shape[1]) * mse
+
+    mse = np.mean(np.square(newimg - sk_newimg))
     print('MSE: %f' % mse)
 
 
