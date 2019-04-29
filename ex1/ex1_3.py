@@ -16,14 +16,14 @@ from ex1_2 import rotate_img_around_point
 
 def main():
     # 1. Bild laden und anzeigen
-    fig = plt.figure()
     img = mpimg.imread('01_rotation/input/stinkbug.png')
-
     img_shape = img.shape
 
     # 2. Mittelpunkt p berechnen und auf Bild anzeigen
     p = np.asarray([int(img_shape[1] / 2), int(img_shape[0] / 2)])
-    plt.plot([p[0]], [p[1]], marker='x')
+    marker_style = dict(color='red', linestyle=':', marker='x',
+                    markersize=15, markerfacecoloralt='gray')
+    plt.plot([p[0]], [p[1]], **marker_style)
 
     # 3. Punkt q anklicken lassen
     plt.imshow(img)

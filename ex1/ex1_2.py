@@ -51,6 +51,7 @@ def main():
     plt.show()
 
     p, q = np.asarray(clicks[0]), np.asarray(clicks[1])
+    print(p)
 
     # 3. Transformation ausführen
     newimg = rotate_img_around_point(img, p, q)
