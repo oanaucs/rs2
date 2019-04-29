@@ -25,8 +25,11 @@ def calculate_H(image_points, world_points):
     image_points = [to_homogenous(i) for i in image_points]
     world_points = [to_homogenous(i) for i in world_points]
 
-    A_rows = [A_rows_for_single_pair(x_, x) for x_, x in zip(image_points, world_points)]
-    A = np.vstack(A_rows)
+    A = np.zeros((2*len(image_points), 9))
+    for i in range(len(image_points)):
+        sub_A = A_rows_for_single_pair(world_points[i], image_points[i])
+        A[2 * i] = sub_A[0]
+        A[2 * i + 1] = sub_A[1] 
 
     # 3. Homogenes Gleichungssystem Ah=0 lösen
     u, d, v = np.linalg.svd(A)
@@ -52,7 +55,7 @@ def main():
     plt.show()
 
     image_points = [vec2d(i[0], i[1]) for i in clicks]
-    world_points = [vec2d(0, 0), vec2d(0, 1), vec2d(1, 0), vec2d(1, 1)]
+    world_points = [vec2d(0, 0), vec2d(1, 1), vec2d(0, 1), vec2d(1, 1)]
 
     # 3. Projektive Abbildung berechnen
     H = calculate_H(image_points, world_points)
@@ -61,11 +64,10 @@ def main():
     print(H)
 
     # 4. Sanity Check durch Anwenden der Projektion
-    # world_points = [to_homogenous(i) for i in world_points]
-    projected_image_points = [np.matmul(H, to_homogenous(i)) for i in image_points]
+    projected_image_points = [from_homogenous(np.matmul(H, to_homogenous(i))) for i in world_points]
 
     print('world points')
-    print(world_points)
+    print(image_points)
     print('')
     print('calculated points')
     print(projected_image_points)
