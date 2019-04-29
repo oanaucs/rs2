@@ -22,7 +22,7 @@ def main():
     img_shape = img.shape
 
     # 2. Mittelpunkt p berechnen und auf Bild anzeigen
-    p = np.asarray([int(img_shape[0] / 2), int(img_shape[1] / 2)])
+    p = np.asarray([int(img_shape[1] / 2), int(img_shape[0] / 2)])
     plt.plot([p[0]], [p[1]], marker='x')
 
     # 3. Punkt q anklicken lassen

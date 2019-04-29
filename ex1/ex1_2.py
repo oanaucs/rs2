@@ -31,7 +31,7 @@ def rotate_img_around_point(img, p, q):
         oldx, oldy = f_inv(p, q, (newx, newy))
         oldx = int(oldx)
         oldy = int(oldy)
-        if (oldy < newimg.shape[0] and oldx < newimg.shape[1]):
+        if (0 < oldy and oldy < newimg.shape[0] and 0 < oldx and oldx < newimg.shape[1]):
             newimg[newy, newx] = img[oldy, oldx]
 
     # 3. Neues Bild zurückgeben
