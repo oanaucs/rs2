@@ -1,6 +1,3 @@
-import sys
-sys.path.append('./../')
-
 from rs2_util import vec2d, to_homogenous, from_homogenous
 import numpy as np
 import imageio

@@ -7,8 +7,6 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-import sys
-sys.path.append('./../')
 from rs2_util import vec2d
 
 
@@ -51,7 +49,6 @@ def main():
     plt.show()
 
     p, q = np.asarray(clicks[0]), np.asarray(clicks[1])
-    print(p)
 
     # 3. Transformation ausführen
     newimg = rotate_img_around_point(img, p, q)

@@ -6,8 +6,6 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-import sys
-sys.path.append('./../')
 from rs2_util import vec2d, to_homogenous, from_homogenous
 from ex1_4 import calculate_H
 
