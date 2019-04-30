@@ -39,7 +39,7 @@ def rotate_img_around_point(img, p, q):
 def main():
     # 1. Bild laden und anzeigen
     fig = plt.figure()
-    img = mpimg.imread('01_rotation/input/stinkbug.png')
+    img = mpimg.imread('01_rotation/input.png')
 
     # 2. Punkte p und q anklicken lassen
     plt.imshow(img)

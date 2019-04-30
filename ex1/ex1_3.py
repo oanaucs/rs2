@@ -14,7 +14,7 @@ from ex1_2 import rotate_img_around_point
 
 def main():
     # 1. Bild laden und anzeigen
-    img = mpimg.imread('01_rotation/input/stinkbug.png')
+    img = mpimg.imread('01_rotation/input.png')
     img_shape = img.shape
 
     # 2. Mittelpunkt p berechnen und auf Bild anzeigen

@@ -13,7 +13,7 @@ from ex1_4 import calculate_H
 def main():
     # 1. Bild laden und anzeigen
     fig = plt.figure()
-    img = mpimg.imread('01_projective/input/stinkbug.png')
+    img = mpimg.imread('01_projective/input.png')
 
     # 2. Punkte x1, ..., x4 anklicken lassen
     plt.imshow(img)
