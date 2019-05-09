@@ -50,8 +50,8 @@ def calculate_Rtxy(image_points, world_points):
     r23_squared=k_squared - r21_*r21_ - r22_*r22_
     r23_=np.sqrt(r23_squared)
 
-    sgn23_= np.sign((r11_ * r21_ + r12_ * r22_) / r13_)
-    if (r23_ * sgn23_ > 0):
+    sgn23_= -np.sign((r11_ * r21_ + r12_ * r22_) / r13_)
+    if (r23_ * sgn23_ < 0):
         r23_= -r23_
 
     # 4. Vektoren normieren

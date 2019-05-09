@@ -61,11 +61,20 @@ def main():
     #TODO fix missing line ends
     # 4. Korrespondenzen visualisieren
     for i in range(0, len(corr)):
-        p1 = keypoints1[corr[i][0]]
-        p2 = keypoints2[corr[i][1]]
-        conn = matplotlib.patches.ConnectionPatch(p1, p2,  coordsA="data", coordsB="data",
-             axesA=axarr[0], axesB=axarr[1], color='#53F242')
-        axarr[0].add_artist(conn)
+        k1 = keypoints1[corr[i][0]]
+        k2 = keypoints2[corr[i][1]]
+
+        p1 = [k1[1], k1[0]]
+        p2 = [k2[1], k2[0]]
+
+        axarr[0].plot(p1[0], p1[1], 'bo')
+        axarr[1].plot(p2[0], p2[1], 'bo')
+        
+        con = matplotlib.patches.ConnectionPatch(xyA=p2, xyB=p1, coordsA='data', coordsB='data',
+                      axesA=axarr[1], axesB=axarr[0], color='#53F242',
+                      arrowstyle="<-", shrinkB=3)
+        axarr[1].add_artist(con)
+
 
     plt.show()
 
