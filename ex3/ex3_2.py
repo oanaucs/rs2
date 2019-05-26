@@ -29,7 +29,8 @@ def calculate_F_hat(F):
     u, d, v = np.linalg.svd(F, full_matrices=False)
 
     d[-1] = 0
-    F_hat = np.dot(u * d, v)
+    F_hat = np.dot(u, np.dot(np.diag(d), v))
+    
     return F_hat
 
 def normalize(x, min_x, max_x):
@@ -39,8 +40,8 @@ def main():
     np.set_printoptions(3, suppress=True, linewidth=160)
 
     # 1. Bilder laden
-    img0 = imageio.imread('./03-epipolar/input/img1_0.jpg')
-    img1 = imageio.imread('./03-epipolar/input/img1_1.jpg')
+    img0 = imageio.imread('./03-epipolar/input/img2_0.jpg')
+    img1 = imageio.imread('./03-epipolar/input/img2_1.jpg')
 
     f, axarr = plt.subplots(1,2)
     axarr[0].imshow(img0)
@@ -50,10 +51,10 @@ def main():
     img_y = img0.shape[0]
 
     # 2. Punkte laden
-    with open('./03-epipolar/input/img1_points.txt') as file:
+    with open('./03-epipolar/input/img2_points.txt') as file:
         point_strings=file.readlines()
-    img0_points=[]
-    img1_points=[]
+    img_l_points=[]
+    img_r_points=[]
     for p in point_strings:
             pairs=p.split(' ')
             x0 = np.float(pairs[0])
@@ -62,8 +63,8 @@ def main():
             x1 = np.float(pairs[-2])
             y1 = np.float(pairs[-1])
 
-            img0_points.append((normalize(x0, 0, img_x), normalize(y0, 0, img_y)))
-            img1_points.append((normalize(x1, 0, img_x), normalize(y1, 0, img_y)))
+            img_l_points.append((normalize(x0, 0, img_x), normalize(y0, 0, img_y)))
+            img_r_points.append((normalize(x1, 0, img_x), normalize(y1, 0, img_y)))
 
             axarr[0].plot(x0, y0, 'bo')
             axarr[1].plot(x1, y1, 'bo')
@@ -71,7 +72,7 @@ def main():
     # plt.show()
 
     # 3. F mit Rang 3 bestimmen
-    F = calculate_F(img0_points[:8], img1_points[:8])
+    F = calculate_F(img_l_points, img_r_points)
     # check rang
     rang_F = np.linalg.matrix_rank(F)
     print('rang F', rang_F)
@@ -80,6 +81,12 @@ def main():
     F_hat = calculate_F_hat(F)
     rang_F_hat = np.linalg.matrix_rank(F_hat)
     print('rang F hat', rang_F_hat)
+
+    print('F:\n%s' % str(F_hat))
+
+    for i in range(0, 8):
+        print((to_homogenous(img_r_points[i]) @ F_hat @ to_homogenous(img_l_points[i])))
+
 
 
 if __name__ == "__main__":

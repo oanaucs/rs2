@@ -11,15 +11,14 @@ import matplotlib.pyplot as plt
 from rs2_util import to_homogenous
 from ex3_2 import calculate_F, calculate_F_hat
 
-
-N = 5
-d_thresh = 0.02
+N = 1000
+d_thresh = 0.0001
 
 
 def d_squared(p, l):
-    l_hat = 1 / np.sqrt(np.square(l[0]) + np.square(l[1])) * l
-    p_hat = 1 / p[2] * p
-    return np.square(np.dot(l_hat, p_hat))
+    l_hat = (1 / np.sqrt(np.square(l[0]) + np.square(l[1]))) * l
+    p_hat = (1 / p[2]) * p
+    return np.square(np.dot(l_hat,np.transpose(p_hat)))
 
 
 def RANSAC_F(img_l_points, img_r_points):
@@ -27,10 +26,9 @@ def RANSAC_F(img_l_points, img_r_points):
     samples = []
     for i in range(0, N):
         idxs = np.random.randint(0, len(img_l_points), 8)
-        samples_l = np.take(img_l_points, idxs, axis=0)
-        samples_r = np.take(img_r_points, idxs, axis=0)
+        samples_l = [img_l_points[i] for i in idxs]
+        samples_r = [img_r_points[i] for i in idxs]
         samples.append((samples_l, samples_r))
-
 
     # 2. Alle Stichproben testen
     max_num = 0
@@ -52,7 +50,7 @@ def RANSAC_F(img_l_points, img_r_points):
             e = d_squared(p_l, l_r) + d_squared(p_r, l_l)
             if (e < d_thresh):
                 num_p += 1
-        if (num_p > max_num):
+        if (num_p >= max_num):
             max_num = num_p
             F_star = F_hat
 
@@ -67,8 +65,8 @@ def main():
     np.set_printoptions(3, suppress=True, linewidth=160)
 
     # 1. Bilder laden
-    img0 = imageio.imread('./03-epipolar/input/img1_0.jpg')
-    img1 = imageio.imread('./03-epipolar/input/img1_1.jpg')
+    img0 = imageio.imread('./03-epipolar/input/img2_0.jpg')
+    img1 = imageio.imread('./03-epipolar/input/img2_1.jpg')
 
     f, axarr = plt.subplots(1,2)
     axarr[0].imshow(img0)
@@ -78,7 +76,7 @@ def main():
     img_y = img0.shape[0]
 
     # 2. Punkte laden
-    with open('./03-epipolar/input/img1_points.txt') as file:
+    with open('./03-epipolar/input/img2_points.txt') as file:
         point_strings=file.readlines()
     img_l_points=[]
     img_r_points=[]
@@ -102,6 +100,9 @@ def main():
     F = RANSAC_F(img_l_points, img_r_points)
 
     print('F:\n%s' % str(F))
+
+    for i in range(0, 5):
+        print((to_homogenous(img_r_points[i]) @ F @ to_homogenous(img_l_points[i])))
 
 
 if __name__ == "__main__":
