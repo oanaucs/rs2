@@ -31,30 +31,24 @@ def main():
     img_x = img0.shape[1]
     img_y = img0.shape[0]
 
-    print(img_x, img_y)
-
     o0 = (int(img_x/2), int(img_y/2)) 
 
     o1 = (int(img_x/2), int(img_y/2)) 
 
-    calib0 = './04-tracking/input/calib0_norm.txt'
-    calib1 = './04-tracking/input/calib1_norm.txt'
+    calib0 = './04-tracking/input/calib0.txt'
+    calib1 = './04-tracking/input/calib1.txt'
 
     P0 = load_calibration_data(calib0, o0)
     P1 = load_calibration_data(calib1, o1)
-
-    #             # plot corresponding points
-    #         axarr[0].plot(y0, x0, 'bo')
-    #         axarr[1].plot(y1, x1, 'bo')
-
-    # plt.show()
 
     # 2. Bilder einlesen
     filenames0 = []
     filenames1 = []
     imgs_0 = []
     imgs_1 = []
-    for i in range(10):
+
+    num_imgs = 10
+    for i in range(num_imgs):
         filename0 = "cam00_%06i.jpg" % i
         filename1 = "cam01_%06i.jpg" % i
 
@@ -66,25 +60,20 @@ def main():
 
     # 4. Triangularisierung
     points = []
-    for i in range(0, 1):
-        # A0 = A_rows_for_point(to_homogenous(centroids0[i]), P0)
-        # A1 = A_rows_for_point(to_homogenous(centroids1[i]), P1)
+    for i in range(0, num_imgs - 1):
+        A0 = A_rows_for_point(to_homogenous(centroids0[i]), P0)
+        A1 = A_rows_for_point(to_homogenous(centroids1[i]), P1)
 
-        # A = np.vstack((A0, A1))
+        A = np.vstack((A0, A1))
 
-        # u, d, v = np.linalg.svd(A)
+        u, d, v = np.linalg.svd(A)
 
-        # X = v[-1, :]
-        # X /= X[-1]
+        X = v[-1, :]
 
-        # X = from_homogenous(X)
+        X = from_homogenous(X)
 
-        # print(X)
-        # print(from_homogenous(P0 @ to_homogenous(X)), centroids0[i])
-
-        X = [10.285564, 6.952230, 16.008560]
-
-        print(from_homogenous(P0 @ to_homogenous(X)), [627.622969, 28.960521])
+        points.append(X)
+        print(X)
 
 
     # # 5. Differenzbilder anzeigen
@@ -155,7 +144,7 @@ def calculate_and_plot(ax, image_filenames, default_value_for_cog=None):
     centroids0 = []
     centroids1 = []
     # 1. Über Folge iterieren
-    for i in range(0, 2):
+    for i in range(0, 9):
         # 1a. Differenzbild berechnen
         diff_img0 = difference_image(imgs_0[i], imgs_0[i+1], theta=25)
         diff_imgs0.append(diff_img0)
@@ -164,11 +153,11 @@ def calculate_and_plot(ax, image_filenames, default_value_for_cog=None):
         diff_imgs1.append(diff_img1)
 
         # 1b. Schwerpunkt berechnen
-        centroid0 = center_of_gravity(diff_img0)
-        centroids0.append(centroid0)
+        centroid0_y, centroid0_x = center_of_gravity(diff_img0)
+        centroids0.append((centroid0_x, centroid0_y))
 
-        centroid1 = center_of_gravity(diff_img1)
-        centroids1.append(centroid1)
+        centroid1_y, centroid1_x = center_of_gravity(diff_img1)
+        centroids1.append((centroid1_x, centroid1_y))
 
         # 1c. Schön darstellen
         plots = None
